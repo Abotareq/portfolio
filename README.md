@@ -54,3 +54,4 @@ src/
 ```
 
 The 3D scenes scale automatically: `useDeviceTier` picks `low | mid | high` from viewport width, CPU cores and `prefers-reduced-motion`, and the hero drops particle count, shape count, DPR and glass materials accordingly.
+
