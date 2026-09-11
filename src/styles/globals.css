@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+  }
+  body {
+    @apply bg-bg text-slate-200 font-sans antialiased overflow-x-hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  ::selection {
+    @apply bg-accent/30 text-white;
+  }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #070A12; }
+  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0E7490; }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.035] backdrop-blur-xl border border-white/[0.08];
+  }
+  .glass-strong {
+    @apply bg-surface/70 backdrop-blur-2xl border border-white/10;
+  }
+  .card {
+    @apply glass rounded-2xl shadow-card transition-all duration-300;
+  }
+  .card-hover {
+    @apply hover:border-accent/30 hover:shadow-glow hover:-translate-y-1;
+  }
+  .section {
+    @apply relative py-24 md:py-32;
+  }
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.25em] text-accent;
+  }
+  .h2 {
+    @apply mt-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white;
+  }
+  .lede {
+    @apply mt-4 max-w-2xl text-base sm:text-lg text-slate-400 leading-relaxed;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300 select-none;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-bg hover:bg-accent-soft shadow-glow-sm hover:shadow-glow;
+  }
+  .btn-ghost {
+    @apply btn glass text-slate-100 hover:border-accent/40 hover:text-white hover:bg-white/[0.06];
+  }
+  .chip {
+    @apply inline-flex items-center rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-medium text-slate-300;
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-white via-accent-soft to-white bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer;
+  }
+  .placeholder {
+    @apply border border-dashed border-amber-400/40 bg-amber-400/5 text-amber-200/80;
+  }
+}
+
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
