@@ -41,24 +41,9 @@ Project screenshots live in `public/projects/` and are referenced via each proje
 
 The form has no backend: it opens the visitor's email client with a pre-filled message to the address in the resume. To send server-side, replace `submit()` in `src/sections/Contact.jsx` with Formspree, EmailJS or an API route.
 
-## The Developer Galaxy (default view)
+## Developer Galaxy (experimental, not deployed)
 
-The site opens as a scroll-driven 3D universe (`src/galaxy/`). The sun at the origin is the developer core; each section is a planet along a spiral path; projects are moons of the Projects gas giant; technologies orbit the Skills world as stars; experience entries are stations on an orbital timeline; education is an icy world with one small moon per program; Contact is a luminous beacon world.
-
-| File | Role |
-| --- | --- |
-| `Galaxy.jsx` | Canvas + drei `ScrollControls` + the DOM overlay |
-| `layout.js` | Planet positions, per-section camera keyframes (portrait/RTL aware) |
-| `CameraRig.jsx` | Catmull-Rom camera path, dwell zones, mouse parallax, travel shake, snap-to-section, moon landing |
-| `store.js` | Tiny external store shared by the scene and the overlay (section, progress, hovered, selected project) |
-| `Core.jsx` / `materials.js` | Animated sun (simplex-noise shader, octaves by device tier), fresnel atmosphere shader |
-| `textures.js` | Procedural planet textures (terra / ice / rock / giant / metal / beacon) — no image assets |
-| `planets/Planet.jsx` | Realistic planet body: texture, atmosphere, clouds, rings, hover, cursor nudge |
-| `planets/Systems.jsx` | The six systems: moons, tech stars, stations, degree moons, labels |
-| `Background.jsx` | Three star layers, nebulae, distant galaxies, dust, instanced asteroid belts |
-| `Overlay.jsx` / `panels/Panels.jsx` | Nav indicator, hints, per-section glass panels, project detail |
-
-Navigation: wheel/drag travels between planets and snaps to the nearest one; the active panel is read to the end before the journey continues; clicking a planet or a nav dot glides there; clicking a moon lands the camera beside it and opens the project. `Esc` closes a project. The classic scrolling site is still available via the "Classic view" button (and is the default when `prefers-reduced-motion` is set, or with `?view=classic`).
+A scroll-driven 3D "galaxy" version of this portfolio lives on the `galaxy` branch (`src/galaxy/`). It was removed from `main` because it felt slow on some machines.
 
 ## Theme & language
 

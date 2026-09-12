@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { HiMenuAlt3, HiX } from 'react-icons/hi'
-import { FiGithub, FiLinkedin, FiMoon, FiSun, FiGlobe } from 'react-icons/fi'
+import { FiGithub, FiLinkedin, FiMoon, FiSun } from 'react-icons/fi'
 import { links, navLinks } from '../data/portfolioData'
 import useActiveSection from '../hooks/useActiveSection'
 import usePortfolio from '../hooks/usePortfolio'
@@ -11,12 +11,9 @@ const ids = navLinks.map((l) => l.id)
 const iconBtn = 'grid h-9 w-9 place-items-center rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.06] transition'
 
 function Toggles({ className = '' }) {
-  const { theme, toggleTheme, locale, toggleLocale, t, setView } = useApp()
+  const { theme, toggleTheme, locale, toggleLocale, t } = useApp()
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      <button onClick={() => setView('galaxy')} aria-label={t('galaxy.enter')} title={t('galaxy.enter')} className={`${iconBtn} text-accent`}>
-        <FiGlobe />
-      </button>
       <button onClick={toggleTheme} aria-label={t('nav.theme')} title={t('nav.theme')} className={iconBtn}>
         <motion.span key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.3 }} className="grid place-items-center">
           {theme === 'dark' ? <FiSun /> : <FiMoon />}

@@ -14,11 +14,8 @@ import { useApp } from './context/AppContext'
 
 // The page-wide 3D world is lazy so the first paint is not blocked by three.js.
 const WorldScene = lazy(() => import('./three/WorldScene'))
-// The Developer Galaxy — the default, scroll-driven 3D universe.
-const Galaxy = lazy(() => import('./galaxy/Galaxy'))
-
 export default function App() {
-  const { theme, isRTL, view, t } = useApp()
+  const { theme, isRTL } = useApp()
 
   // SEO metadata generated from the resume data.
   useEffect(() => {
@@ -39,20 +36,6 @@ export default function App() {
     set('meta[name="twitter:title"]', 'content', seo.title)
     set('meta[name="twitter:description"]', 'content', seo.description)
   }, [])
-
-  if (view === 'galaxy') {
-    return (
-      <Suspense
-        fallback={
-          <div className="fixed inset-0 grid place-items-center bg-[#05070e] font-mono text-xs uppercase tracking-[0.3em] text-cyan-300">
-            <span className="animate-pulseSoft">{t('galaxy.loading')}</span>
-          </div>
-        }
-      >
-        <Galaxy />
-      </Suspense>
-    )
-  }
 
   return (
     <div className="relative">
