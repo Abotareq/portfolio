@@ -32,8 +32,8 @@ export function keyframe(id, portrait = false, rtl = false) {
     // the sun sits beside the introduction (above it on phones)
     const sx = rtl ? -4.6 : 4.6
     return {
-      position: new THREE.Vector3(portrait ? 0 : -sx * 0.25, 1.0, portrait ? 19 : 15),
-      target: new THREE.Vector3(portrait ? 0 : -sx, portrait ? -3.2 : 0.4, 0),
+      position: new THREE.Vector3(portrait ? 0 : -sx * 0.25, 1.0, portrait ? 24 : 15),
+      target: new THREE.Vector3(portrait ? 0 : -sx, portrait ? -8 : 0.4, 0),
     }
   }
   // The panel covers one side of the screen, so the look target is shifted

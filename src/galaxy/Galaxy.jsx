@@ -46,7 +46,7 @@ export default function Galaxy() {
         shadows={false}
       >
         <Suspense fallback={null}>
-          <ScrollControls pages={SECTIONS.length} damping={0.35} distance={0.9}>
+          <ScrollControls pages={SECTIONS.length} damping={0.12} distance={0.9}>
             <Universe tier={tier} portrait={portrait} rtl={isRTL} data={data} t={t} />
           </ScrollControls>
         </Suspense>

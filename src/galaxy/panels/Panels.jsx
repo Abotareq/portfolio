@@ -30,11 +30,11 @@ export function HomePanel({ portrait }) {
   const { personal } = usePortfolio()
   const parts = personal.name.split(' ')
   return (
-    <div className={`pointer-events-none flex h-full w-full flex-col ${portrait ? 'items-center justify-end px-6 pb-16 text-center' : 'justify-center ps-44 pe-8 text-start'}`}>
+    <div className={`pointer-events-none flex h-full w-full flex-col ${portrait ? 'items-center justify-end px-5 pb-14 text-center' : 'justify-center ps-44 pe-8 text-start'}`}>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }} className="relative max-w-xl">
         <div className="pointer-events-none absolute -inset-x-16 -inset-y-10 -z-10 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(5,7,14,0.55),rgba(5,7,14,0.25)_55%,transparent_75%)]" />
         <p className="font-mono text-xs tracking-[0.3em] text-cyan-300 uppercase">{t('hero.hi')}</p>
-        <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl [text-shadow:0_0_40px_rgba(34,211,238,0.35)]">
+        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl [text-shadow:0_0_40px_rgba(34,211,238,0.35)]">
           {parts.slice(0, 2).join(' ')} <span className="text-slate-400">{parts.slice(2).join(' ')}</span>
         </h1>
         <h2 className="mt-3 text-xl font-bold text-cyan-200 sm:text-2xl md:text-3xl">

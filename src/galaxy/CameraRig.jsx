@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useScroll } from '@react-three/drei'
 import * as THREE from 'three'
+import Lenis from 'lenis'
 import { SECTIONS, keyframe } from './layout'
 import { galaxy, useGalaxy } from './store'
 
@@ -35,50 +36,63 @@ export default function CameraRig({ portrait, rtl, motion, lookTarget }) {
   const frames = useMemo(() => SECTIONS.map((id) => keyframe(id, portrait, rtl)), [portrait, rtl])
   const curve = useMemo(() => new THREE.CatmullRomCurve3(frames.map((f) => f.position), false, 'centripetal', 0.35), [frames])
 
-  // Programmatic travel (nav dots, planet clicks, snapping). While a glide is
-  // in flight, scroll events are ignored so a slow frame can't trigger a snap
-  // back to where we came from.
+  // Lenis smooths wheel/touch input on the ScrollControls container; drei
+  // still maps the container's scrollTop to `scroll.offset`. Programmatic
+  // travel (nav dots, planet clicks, snapping) also goes through Lenis with a
+  // `lock` so a slow frame can never trigger a snap back mid-glide.
+  const lenisRef = useRef(null)
   useEffect(() => {
     const el = scroll.el
     if (!el) return
     const legs = SECTIONS.length - 1
-    let glideTarget = null
-    let glideUntil = 0
+    const lenis = new Lenis({
+      wrapper: el,
+      content: scroll.fill,
+      lerp: 0.075,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.4,
+      smoothWheel: true,
+      syncTouch: false,
+      autoRaf: false,
+    })
+    lenisRef.current = lenis
     let idleTimer
+    let gliding = false
 
-    const glide = (top) => {
-      glideTarget = top
-      glideUntil = performance.now() + 1800
-      el.scrollTo({ top, behavior: 'smooth' })
-    }
     const toSection = (index) => {
-      const max = el.scrollHeight - el.clientHeight
-      glide((THREE.MathUtils.clamp(index, 0, legs) / legs) * max)
+      const target = (THREE.MathUtils.clamp(index, 0, legs) / legs) * lenis.limit
+      gliding = true
+      lenis.scrollTo(target, {
+        duration: 1.5,
+        lock: true,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        onComplete: () => {
+          gliding = false
+        },
+      })
     }
     galaxy.set({ scrollTo: toSection, ready: true })
 
-    const onScroll = () => {
-      if (glideTarget !== null) {
-        if (Math.abs(el.scrollTop - glideTarget) < 2 || performance.now() > glideUntil) glideTarget = null
-        return
-      }
+    // Snap: when the user stops between two planets, glide to the nearest one.
+    lenis.on('scroll', () => {
+      if (gliding) return
       clearTimeout(idleTimer)
       idleTimer = setTimeout(() => {
-        // user stopped between planets → settle on the nearest one
-        const max = el.scrollHeight - el.clientHeight
-        const s = (el.scrollTop / max) * legs
+        const s = (lenis.scroll / lenis.limit) * legs
         const nearest = Math.round(s)
         if (Math.abs(s - nearest) > 0.015) toSection(nearest)
-      }, 420)
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
+      }, 380)
+    })
+
     return () => {
-      el.removeEventListener('scroll', onScroll)
       clearTimeout(idleTimer)
+      lenis.destroy()
+      lenisRef.current = null
     }
   }, [scroll])
 
   useFrame((state, dt) => {
+    lenisRef.current?.raf(state.clock.elapsedTime * 1000)
     const offset = scroll.offset
     const legs = SECTIONS.length - 1
     const s = offset * legs

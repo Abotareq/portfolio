@@ -41,12 +41,14 @@ export default function Overlay({ portrait, tier }) {
       const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
       if (projectId) {
         e.preventDefault()
+        e.stopPropagation()
         if (canScroll) el.scrollTop += e.deltaY
         return
       }
       if (!canScroll) return
       if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
         e.preventDefault()
+        e.stopPropagation()
         el.scrollTop += e.deltaY
       }
     }
