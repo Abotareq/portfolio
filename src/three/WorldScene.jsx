@@ -198,11 +198,21 @@ export default function WorldScene({ theme = 'dark', isRTL = false }) {
   const tier = useDeviceTier()
   const preset = PRESETS[tier]
   const [visible, setVisible] = useState(true)
+  // The scenery needs room outside the content column; below 1280px it would
+  // sit behind the cards, so it is not mounted at all there.
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1280)
   useEffect(() => {
     const onVis = () => setVisible(!document.hidden)
+    const onResize = () => setWide(window.innerWidth >= 1280)
     document.addEventListener('visibilitychange', onVis)
-    return () => document.removeEventListener('visibilitychange', onVis)
+    window.addEventListener('resize', onResize)
+    return () => {
+      document.removeEventListener('visibilitychange', onVis)
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
+
+  if (!wide) return null
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>

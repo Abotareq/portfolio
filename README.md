@@ -51,7 +51,7 @@ The form has no backend: it opens the visitor's email client with a pre-filled m
 | Scene | File | What it does |
 | --- | --- | --- |
 | Hero | `src/three/HeroScene.jsx` | Layered composition: core, orbiters, abstract shapes with connecting lines, 3D code symbols (`{ }`, `</>`, `<>`…), laptop, database, cloud, server rack, glass panels, background grid, instanced fore/background particles. Cursor proximity pushes objects, camera follows the mouse and scroll. Paused when scrolled away. |
-| World | `src/three/WorldScene.jsx` | Fixed full-page canvas behind every section. Objects are anchored to sections (monitor/laptop/keyboard for Projects, server/cloud for Experience, git graph for GitHub, database for Contact…) and the camera travels down as you scroll, so scenery enters, grows, turns and recedes. |
+| World | `src/three/WorldScene.jsx` | Fixed full-page canvas behind every section. Objects are anchored to sections (monitor/laptop/keyboard for Projects, server/cloud for Experience, git graph for GitHub, database for Contact…) and the camera travels down as you scroll, so scenery enters, grows, turns and recedes. Only mounted at viewports ≥ 1280px. |
 | Tech orbit | `src/three/TechOrbit.jsx` | The resume's technologies orbit a core on three tilted rings, linked by lines that follow them; hover a node to highlight it. |
 
 Shared primitives are in `src/three/objects/` (instanced particles, `Drift` bobbing/cursor-proximity wrapper, `ConnectionLines`, and the developer objects). Quality scales with `useDeviceTier` (particle counts, DPR, object count, glass materials) and respects `prefers-reduced-motion`.
