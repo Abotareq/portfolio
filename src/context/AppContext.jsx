@@ -22,6 +22,15 @@ function initialTheme() {
   return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
+function initialView() {
+  const q = new URLSearchParams(window.location.search).get('view')
+  if (q === 'classic' || q === 'galaxy') return q
+  const saved = read('view', null)
+  if (saved === 'classic' || saved === 'galaxy') return saved
+  // reduced-motion users get the calm scrolling site by default
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'classic' : 'galaxy'
+}
+
 function initialLocale() {
   const saved = read('locale', null)
   if (saved === 'en' || saved === 'ar') return saved
@@ -31,16 +40,20 @@ function initialLocale() {
 export function AppProvider({ children }) {
   const [theme, setTheme] = useState(initialTheme)
   const [locale, setLocale] = useState(initialLocale)
+  const [view, setView] = useState(initialView)
 
+  // The galaxy is deep space: it always renders with the dark palette.
   useEffect(() => {
     const root = document.documentElement
+    const effective = view === 'galaxy' ? 'dark' : theme
     root.classList.remove('dark', 'light')
-    root.classList.add(theme)
-    root.style.colorScheme = theme
+    root.classList.add(effective)
+    root.style.colorScheme = effective
     try {
       localStorage.setItem('theme', theme)
+      localStorage.setItem('view', view)
     } catch {}
-  }, [theme])
+  }, [theme, view])
 
   useEffect(() => {
     const root = document.documentElement
@@ -65,8 +78,8 @@ export function AppProvider({ children }) {
   )
 
   const value = useMemo(
-    () => ({ theme, setTheme, toggleTheme, locale, setLocale, toggleLocale, t, isRTL: locale === 'ar', isDark: theme === 'dark' }),
-    [theme, toggleTheme, locale, toggleLocale, t]
+    () => ({ theme, setTheme, toggleTheme, locale, setLocale, toggleLocale, t, isRTL: locale === 'ar', isDark: theme === 'dark', view, setView }),
+    [theme, toggleTheme, locale, toggleLocale, t, view]
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
