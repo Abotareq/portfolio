@@ -41,15 +41,33 @@ Project screenshots live in `public/projects/` and are referenced via each proje
 
 The form has no backend: it opens the visitor's email client with a pre-filled message to the address in the resume. To send server-side, replace `submit()` in `src/sections/Contact.jsx` with Formspree, EmailJS or an API route.
 
+## Theme & language
+
+- **Dark / light** — toggled from the navbar (sun/moon). The whole palette is CSS variables in `src/styles/globals.css` (`:root.dark` / `:root.light`); Tailwind's `white`, `slate-*`, `bg`, `surface` and `accent` colours map to them, and the Three.js scenes read `src/three/palette.js`. The choice persists in `localStorage` and defaults to the OS preference.
+- **English / Arabic** — toggled from the navbar (`ع` / `EN`). UI strings live in `src/data/i18n.js`; Arabic content overrides (keyed by project/experience id) live in `src/data/portfolioData.ar.js` and are merged over the English source by `usePortfolio()`. Arabic switches `<html dir="rtl">`, the Tajawal font, and mirrors the 3D compositions.
+
+## 3D layers
+
+| Scene | File | What it does |
+| --- | --- | --- |
+| Hero | `src/three/HeroScene.jsx` | Layered composition: core, orbiters, abstract shapes with connecting lines, 3D code symbols (`{ }`, `</>`, `<>`…), laptop, database, cloud, server rack, glass panels, background grid, instanced fore/background particles. Cursor proximity pushes objects, camera follows the mouse and scroll. Paused when scrolled away. |
+| World | `src/three/WorldScene.jsx` | Fixed full-page canvas behind every section. Objects are anchored to sections (monitor/laptop/keyboard for Projects, server/cloud for Experience, git graph for GitHub, database for Contact…) and the camera travels down as you scroll, so scenery enters, grows, turns and recedes. |
+| Tech orbit | `src/three/TechOrbit.jsx` | The resume's technologies orbit a core on three tilted rings, linked by lines that follow them; hover a node to highlight it. |
+
+Shared primitives are in `src/three/objects/` (instanced particles, `Drift` bobbing/cursor-proximity wrapper, `ConnectionLines`, and the developer objects). Quality scales with `useDeviceTier` (particle counts, DPR, object count, glass materials) and respects `prefers-reduced-motion`.
+
+`scripts/shot.mjs` captures desktop screenshots with headless Chrome: `node scripts/shot.mjs <name> <sectionId|0> <w> <h> <dark|light> <en|ar>`.
+
 ## Structure
 
 ```
 src/
 ├── components/   Navbar, Footer, TiltCard, Reveal, Counter, SectionHeader, Placeholder
 ├── sections/     Hero, About, Skills, Projects, Experience, Education, GitHub, Contact
-├── three/        HeroScene (hero 3D), TechConstellation (skills 3D)
-├── data/         portfolioData.js — single source of truth
-├── hooks/        useDeviceTier, useActiveSection, useGitHub, useMouse
+├── three/        HeroScene, WorldScene, TechOrbit, palette, objects/
+├── context/      AppContext — theme + locale
+├── data/         portfolioData.js (source of truth), portfolioData.ar.js, i18n.js
+├── hooks/        useDeviceTier, useActiveSection, useGitHub, useMouse, usePortfolio
 └── styles/       globals.css (Tailwind layers + design tokens)
 ```
 

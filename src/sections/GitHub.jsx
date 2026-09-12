@@ -5,7 +5,9 @@ import SectionHeader from '../components/SectionHeader'
 import Reveal from '../components/Reveal'
 import TiltCard from '../components/TiltCard'
 import useGitHub from '../hooks/useGitHub'
-import { githubRepos, links, personal } from '../data/portfolioData'
+import { githubRepos, links } from '../data/portfolioData'
+import usePortfolio from '../hooks/usePortfolio'
+import { useApp } from '../context/AppContext'
 
 const LANG_COLORS = {
   TypeScript: '#3178c6',
@@ -16,13 +18,13 @@ const LANG_COLORS = {
   Python: '#3572A5',
 }
 
-function timeAgo(iso) {
+function timeAgo(iso, t) {
   if (!iso) return null
   const days = Math.floor((Date.now() - new Date(iso)) / 86400000)
-  if (days < 1) return 'today'
-  if (days < 30) return `${days}d ago`
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`
-  return `${Math.floor(days / 365)}y ago`
+  if (days < 1) return t('github.today')
+  if (days < 30) return `${days}${t('github.d')}`
+  if (days < 365) return `${Math.floor(days / 30)}${t('github.mo')}`
+  return `${Math.floor(days / 365)}${t('github.y')}`
 }
 
 /** Language distribution across the featured repos (real API data or snapshot). */
@@ -64,11 +66,12 @@ function LanguageBar({ repos }) {
 
 /** Recent-activity strip: one animated cell per featured repo, ordered by last push. */
 function ActivityStrip({ repos }) {
+  const { t } = useApp()
   const ordered = useMemo(() => [...repos].filter((r) => r.pushedAt).sort((a, b) => new Date(b.pushedAt) - new Date(a.pushedAt)), [repos])
   if (!ordered.length) return null
   return (
     <div className="mt-6">
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">Recent pushes</div>
+      <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">{t('github.recent')}</div>
       <div className="flex flex-wrap gap-2">
         {ordered.map((r, i) => {
           const days = Math.floor((Date.now() - new Date(r.pushedAt)) / 86400000)
@@ -88,7 +91,7 @@ function ActivityStrip({ repos }) {
             >
               <span className="h-3 w-3 rounded-sm" style={{ background: `rgba(34,211,238,${heat})` }} />
               <span className="font-mono">{r.name}</span>
-              <span className="text-slate-600">{timeAgo(r.pushedAt)}</span>
+              <span className="text-slate-600">{timeAgo(r.pushedAt, t)}</span>
             </motion.a>
           )
         })}
@@ -99,16 +102,18 @@ function ActivityStrip({ repos }) {
 
 export default function GitHub() {
   const { profile, repos, live } = useGitHub(links.githubUser, githubRepos)
+  const { t } = useApp()
+  const { personal } = usePortfolio()
 
   return (
     <section id="github" className="section">
       <div className="container-x">
-        <SectionHeader eyebrow="GitHub" title="Explore my code." lede="Public repositories pulled live from GitHub. Everything here is real, from the stars to the last push." />
+        <SectionHeader eyebrow={t('github.eyebrow')} title={t('github.title')} lede={t('github.lede')} />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {/* profile card */}
           <Reveal>
-            <div className="card h-full p-6">
+            <div className="card h-full p-6" dir="ltr">
               <div className="flex items-center gap-4">
                 <img src={profile?.avatar_url || personal.avatar} alt={personal.name} className="h-16 w-16 rounded-2xl border border-white/10" loading="lazy" />
                 <div>
@@ -122,9 +127,9 @@ export default function GitHub() {
 
               <div className="mt-6 grid grid-cols-3 gap-2 text-center">
                 {[
-                  { icon: FiBook, label: 'Repos', value: profile?.public_repos ?? 18 },
-                  { icon: FiUsers, label: 'Followers', value: profile?.followers ?? 2 },
-                  { icon: FiStar, label: 'Stars', value: repos.reduce((a, r) => a + (r.stars || 0), 0) },
+                  { icon: FiBook, label: t('github.repos'), value: profile?.public_repos ?? 18 },
+                  { icon: FiUsers, label: t('github.followers'), value: profile?.followers ?? 2 },
+                  { icon: FiStar, label: t('github.stars'), value: repos.reduce((a, r) => a + (r.stars || 0), 0) },
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
                     <s.icon className="mx-auto text-accent" />
@@ -135,15 +140,15 @@ export default function GitHub() {
               </div>
 
               <div className="mt-6">
-                <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">Languages · featured repos</div>
+                <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">{t('github.languages')}</div>
                 <LanguageBar repos={repos} />
               </div>
               <ActivityStrip repos={repos} />
 
               <a href={links.github} target="_blank" rel="noreferrer" className="btn-primary mt-6 w-full">
-                <FiGithub /> View GitHub Profile
+                <FiGithub /> {t('github.viewProfile')}
               </a>
-              <div className="mt-3 text-center font-mono text-[10px] text-slate-600">{live ? '● live from api.github.com' : '○ snapshot data (API unavailable)'}</div>
+              <div className="mt-3 text-center font-mono text-[10px] text-slate-600">{live ? t('github.live') : t('github.snapshot')}</div>
             </div>
           </Reveal>
 
@@ -151,15 +156,15 @@ export default function GitHub() {
           <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
             {repos.map((r, i) => (
               <Reveal key={r.name} delay={i * 0.06}>
-                <TiltCard intensity={4} className="h-full">
-                  <a href={r.url} target="_blank" rel="noreferrer" className="card card-hover relative flex h-full flex-col p-5">
-                    <div className="flex items-center gap-2">
+                <TiltCard intensity={5} className="h-full">
+                  <a href={r.url} target="_blank" rel="noreferrer" className="card relative flex h-full flex-col p-5" dir="ltr">
+                    <div className="depth-1 flex items-center gap-2">
                       <FiGitBranch className="text-accent" />
                       <span className="truncate font-mono text-sm font-semibold text-white">{r.name}</span>
                       <FiExternalLink className="ml-auto shrink-0 text-slate-600 transition group-hover:text-accent" size={14} />
                     </div>
-                    <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{r.description || 'No description provided.'}</p>
-                    <div className="mt-4 flex items-center gap-4 text-xs text-slate-500">
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{r.description || t('github.noDescription')}</p>
+                    <div className="depth-2 mt-4 flex items-center gap-4 text-xs text-slate-500">
                       {r.language && (
                         <span className="flex items-center gap-1.5">
                           <span className="h-2.5 w-2.5 rounded-full" style={{ background: LANG_COLORS[r.language] || '#22D3EE' }} />
@@ -169,7 +174,7 @@ export default function GitHub() {
                       <span className="flex items-center gap-1">
                         <FiStar /> {r.stars ?? 0}
                       </span>
-                      {r.pushedAt && <span className="ml-auto font-mono">{timeAgo(r.pushedAt)}</span>}
+                      {r.pushedAt && <span className="ml-auto font-mono">{timeAgo(r.pushedAt, t)}</span>}
                     </div>
                     {r.homepage && (
                       <span className="mt-3 inline-flex items-center gap-1 text-xs text-accent">

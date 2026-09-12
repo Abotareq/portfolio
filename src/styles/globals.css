@@ -1,8 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Tajawal:wght@400;500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ---------- theme tokens (space-separated RGB for Tailwind alpha) ---------- */
+:root,
+:root.dark {
+  --bg: 7 10 18;
+  --surface: 13 18 32;
+  --fg: 255 255 255;
+  --accent: 34 211 238;
+  --accent-soft: 103 232 249;
+  --accent-dim: 14 116 144;
+  --shadow: 0 0 0;
+  --s100: 241 245 249; --s200: 226 232 240; --s300: 203 213 225; --s400: 148 163 184;
+  --s500: 100 116 139; --s600: 71 85 105;  --s700: 51 65 85;   --s800: 30 41 59;  --s900: 15 23 42;
+}
+:root.light {
+  --bg: 244 246 251;
+  --surface: 255 255 255;
+  --fg: 11 18 32;
+  --accent: 14 116 144;
+  --accent-soft: 8 145 178;
+  --accent-dim: 103 232 249;
+  --shadow: 30 41 59;
+  --s100: 30 41 59;   --s200: 31 41 55;   --s300: 51 65 85;   --s400: 71 85 105;
+  --s500: 100 116 139; --s600: 148 163 184; --s700: 203 213 225; --s800: 226 232 240; --s900: 241 245 249;
+}
 
 @layer base {
   html {
@@ -12,25 +37,39 @@
   body {
     @apply bg-bg text-slate-200 font-sans antialiased overflow-x-hidden;
     font-family: 'Inter', system-ui, sans-serif;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  html[dir='rtl'] body {
+    font-family: 'Tajawal', 'Inter', system-ui, sans-serif;
+  }
+  html[dir='rtl'] .font-mono {
+    letter-spacing: 0;
   }
   ::selection {
     @apply bg-accent/30 text-white;
   }
   ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #070A12; }
-  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
-  ::-webkit-scrollbar-thumb:hover { background: #0E7490; }
+  ::-webkit-scrollbar-track { background: rgb(var(--bg)); }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--s800)); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent-dim)); }
 }
 
 @layer components {
   .glass {
     @apply bg-white/[0.035] backdrop-blur-xl border border-white/[0.08];
   }
+  .light .glass {
+    @apply bg-surface/70 border-white/[0.08];
+  }
   .glass-strong {
     @apply bg-surface/70 backdrop-blur-2xl border border-white/10;
   }
   .card {
     @apply glass rounded-2xl shadow-card transition-all duration-300;
+    transform-style: preserve-3d;
+  }
+  .light .card {
+    @apply bg-surface/80;
   }
   .card-hover {
     @apply hover:border-accent/30 hover:shadow-glow hover:-translate-y-1;
@@ -68,6 +107,13 @@
   .placeholder {
     @apply border border-dashed border-amber-400/40 bg-amber-400/5 text-amber-200/80;
   }
+  .light .placeholder {
+    @apply text-amber-700;
+  }
+  /* depth layers inside 3D-tilted cards */
+  .depth-1 { transform: translateZ(18px); }
+  .depth-2 { transform: translateZ(36px); }
+  .depth-3 { transform: translateZ(54px); }
 }
 
 .noise::before {
@@ -77,4 +123,8 @@
   pointer-events: none;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.light .noise::before {
+  opacity: 0.02;
 }

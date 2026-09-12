@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Hero from './sections/Hero'
@@ -10,8 +10,14 @@ import Education from './sections/Education'
 import GitHub from './sections/GitHub'
 import Contact from './sections/Contact'
 import { seo } from './data/portfolioData'
+import { useApp } from './context/AppContext'
+
+// The page-wide 3D world is lazy so the first paint is not blocked by three.js.
+const WorldScene = lazy(() => import('./three/WorldScene'))
 
 export default function App() {
+  const { theme, isRTL } = useApp()
+
   // SEO metadata generated from the resume data.
   useEffect(() => {
     document.title = seo.title
@@ -34,14 +40,19 @@ export default function App() {
 
   return (
     <div className="relative">
-      {/* ambient background glows */}
+      {/* ambient background glows (under the 3D world) */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-accent/10 blur-[140px]" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-accent/5 blur-[120px]" />
       </div>
 
+      {/* scroll-driven 3D scenery behind every section */}
+      <Suspense fallback={null}>
+        <WorldScene theme={theme} isRTL={isRTL} />
+      </Suspense>
+
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <About />
         <Skills />
@@ -51,7 +62,9 @@ export default function App() {
         <GitHub />
         <Contact />
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   )
 }
